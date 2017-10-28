@@ -1,0 +1,22 @@
+package counter;
+
+public class c {
+
+	public static void main(String[] args) {
+		
+		int INPUT = 10234;
+		
+		int result = 0;
+		
+		for (int r = 0; r < INPUT/5; r++)
+		{
+		
+			result = result + (r * (INPUT - r*5)/3 * (INPUT - r*5)/3); 
+			
+			
+		}
+
+		System.out.println(result);
+	}
+
+}

@@ -1,0 +1,31 @@
+package counter;
+
+public class c {
+
+	public static void main(String[] args) {
+		
+		int INPUT = 192;
+		
+		long result = 0, result2 = 0;
+		
+		for (int r = 0; r < INPUT/5; r++)
+		{
+			
+			long remain_b = (((INPUT - r)/3)/3);
+			
+			result = result + (r * (remain_b * remain_b));
+			
+			
+			
+			for(int b = 0; b < (INPUT - r)/3; b++)
+				for(int g = 0; g < INPUT - r - b; g++)
+					if (r * 5 + b * 3 + g == INPUT)
+						result2++;
+					
+		}
+
+		System.out.println(result);
+		System.out.println(result2);
+	}
+
+}

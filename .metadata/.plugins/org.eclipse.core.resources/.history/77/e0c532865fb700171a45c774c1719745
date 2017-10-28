@@ -1,0 +1,36 @@
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
+
+public class Concur {
+
+	private int _counter;
+
+	private Concur() {
+		// Connect to local NetworkTables server
+		NetworkTable.setClientMode();
+		NetworkTable.setIPAddress("localhost");
+		NetworkTable.initialize();
+
+		NetworkTable t = NetworkTable.getTable("/ResetCounter");
+
+	}
+
+	private void countAndPrint() {
+		while (true) {
+			System.out.println("Counter: " + _counter);
+
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				break;
+			}
+
+			_counter = _counter + 1;
+		}
+	}
+
+	public static void main(String args[]) {
+		Concur instance = new Concur();
+		instance.countAndPrint();
+	}
+
+}

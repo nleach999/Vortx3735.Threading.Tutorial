@@ -1,0 +1,16 @@
+package counter;
+
+public class c {
+
+	public static void main(String[] args) {
+		
+		int INPUT = 10234;
+		
+		for (int r = 0; x < INPUT/5; r++)
+		{
+			
+		}
+
+	}
+
+}

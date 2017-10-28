@@ -1,0 +1,66 @@
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.tables.ITable;
+import edu.wpi.first.wpilibj.tables.ITableListener;
+
+
+/*
+ * Nathan Leach (October 2017)
+ * 
+ * This is a simple concurrency/multi-threading example.
+ * 
+ * Run OutlineViewer in server mode on your machine before starting this program:
+ * 
+ * java -jar OutlineViewer.jar
+ * 
+ *
+ * The purpose of this is to illustrate how multi-threading works.
+ * 
+ * All programs have a "main" thread that starts when the program starts
+ * and ends when the program ends.  Any threads running at the time the main
+ * thread ends are usually destroyed (but there are some cases when they are
+ * not....this won't be covered here.)  
+ * 
+ * Run the program and watch the console output as you add or update values
+ * in OutlineViewer.
+ * 
+ * 
+ */
+public class Threading implements ITableListener {
+
+
+	private Threading() {
+		// Connect to local NetworkTables server
+		NetworkTable.setClientMode();
+		NetworkTable.setIPAddress("localhost");
+
+		// Initialize starts the NetworkTable thread.
+		NetworkTable.initialize();
+
+		// Tell the NetworkTable library to notify our program
+		// when a value changes.
+		NetworkTable t = NetworkTable.getTable("");
+		t.addTableListener(this, true);
+	}
+	
+
+	@Override
+	public void valueChanged(ITable table, String key, Object value, boolean isNew) {
+		System.out.println(String.format("valueChanged: Key: {%s} Value: {%s} isNew: {%s} Thread: {%s}", 
+				key, value, isNew, Thread.currentThread().getName()));
+		
+	}
+
+	public static void main(String args[]) throws IOException {
+		Threading instance = new Threading();
+		System.out.println(Thread.currentThread().getName() );
+		
+		// Read a character from the console so that the main
+		// thread doesn't exit until we input something in the console.
+		// Why is this being done?
+		
+		System.in.read();
+	}
+}

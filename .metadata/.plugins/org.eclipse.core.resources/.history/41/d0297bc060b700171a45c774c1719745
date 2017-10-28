@@ -1,0 +1,49 @@
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.tables.ITable;
+import edu.wpi.first.wpilibj.tables.ITableListener;
+
+public class Concur implements ITableListener {
+
+	private int _counter;
+
+	private Concur() {
+		// Connect to local NetworkTables server
+		NetworkTable.setClientMode();
+		NetworkTable.setIPAddress("localhost");
+		NetworkTable.initialize();
+
+		
+		// Initialize the reset counter value we'll read.
+		NetworkTable t = NetworkTable.getTable("/");
+		t.putBoolean("/RestCounter", false);
+		
+		t.addTableListener("/", this, true);
+
+	}
+
+	private void countAndPrint() {
+		while (true) {
+			System.out.println("Counter: " + _counter);
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				break;
+			}
+
+			_counter = _counter + 1;
+		}
+	}
+
+	public static void main(String args[]) {
+		Concur instance = new Concur();
+		instance.countAndPrint();
+	}
+
+	@Override
+	public void valueChanged(ITable table, String key, Object value, boolean isNew) {
+		System.out.println(String.format("valueChanged: Key: {%s} Value: {%s} isNew: {%s}", key, value, isNew));
+		
+	}
+
+}

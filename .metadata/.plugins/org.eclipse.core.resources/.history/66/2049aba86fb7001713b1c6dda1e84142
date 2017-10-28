@@ -1,0 +1,78 @@
+import java.util.concurrent.atomic.AtomicInteger;
+
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.tables.ITable;
+import edu.wpi.first.wpilibj.tables.ITableListener;
+
+
+/*
+ * Nathan Leach (October 2017)
+ * 
+ * This is a simple concurrency/multi-threading example.
+ * 
+ * Run OutlineViewer in server mode on your machine before starting this program:
+ * 
+ * java -jar OutlineViewer.jar
+ * 
+ *
+ * This connects to the NetworkTables server (OutlineViewer in this case) and registers a
+ * boolean variable "ResetCounter" with the default value of false.  The program then
+ * prints out an incrementing number in the console.  If the value of ResetCounter is
+ * set to "true" in the OutlineViewer, the program should immediately start counting
+ * starting from 0 again amd the value in the OutlineViewer should be reset back to false.
+ *
+ * 
+ * In the previous program, a time delay was inserted to allow the counter to reset
+ * to 0 when the boolean value was changed in OutlineViewer.  This program works
+ * without a time delay after a simple change to use the class AtomicInteger instead
+ * of the primitive integer type.
+ * 
+ * 
+ * 
+ */
+public class Concur implements ITableListener {
+
+	private AtomicInteger _counter;
+
+	private Concur() {
+		// Connect to local NetworkTables server
+		NetworkTable.setClientMode();
+		NetworkTable.setIPAddress("localhost");
+		NetworkTable.initialize();
+
+		_counter = new AtomicInteger ();
+		
+		// Initialize the reset counter value we'll read.
+		NetworkTable t = NetworkTable.getTable("");
+		t.putBoolean("ResetCounter", false);
+		
+		t.addTableListener(this, true);
+		
+	}
+
+	private void countAndPrint() {
+		while (true) {
+			System.out.println("Counter: " + _counter.incrementAndGet() );
+		}
+	}
+
+
+	@Override
+	public void valueChanged(ITable table, String key, Object value, boolean isNew) {
+		System.out.println(String.format("valueChanged: Key: {%s} Value: {%s} isNew: {%s}", key, value, isNew));
+		
+		Boolean reset = (Boolean) value;
+		
+		if (key.compareTo("ResetCounter") == 0 && reset)
+		{
+			_counter.set(0);
+			table.putBoolean(key, false);
+		}
+		
+	}
+
+	public static void main(String args[]) {
+		Concur instance = new Concur();
+		instance.countAndPrint();
+	}
+}
